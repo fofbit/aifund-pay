@@ -21,14 +21,20 @@ TOKEN_CONTRACTS = {
         "erc20": "0xdac17f958d2ee523a2206206994597c13d831ec7",
         "bsc": "0x55d398326f99059ff775485246999027b3197955",
         "arb": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+        "polygon": "0xc2132D05D31c914a87C6611C10748AaCBb0B0cE",
         "trc20": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
     },
     "USDC": {
         "erc20": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
         "arb": "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+        "polygon": "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
         "base": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
     },
+    "USDC.e": {
+        "polygon": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+    },
     "ETH": {"erc20": "native", "arb": "native", "base": "native"},
+    "POL": {"polygon": "native"},
     "BNB": {"bsc": "native"},
     "SOL": {"sol": "native"},
 }
@@ -38,6 +44,7 @@ COINGECKO_IDS = {
     "BTC": "bitcoin",
     "SOL": "solana",
     "BNB": "binancecoin",
+    "POL": "matic-network",
 }
 
 
@@ -62,7 +69,7 @@ async def get_usd_price(token_symbol: str) -> float:
         logger.error(f"Price fetch error for {token_symbol}: {e}")
     
     # Fallback prices
-    fallbacks = {"ETH": 3500, "BTC": 100000, "SOL": 180, "BNB": 580}
+    fallbacks = {"ETH": 3500, "BTC": 100000, "SOL": 180, "BNB": 580, "POL": 0.45}
     return fallbacks.get(token_symbol, 0)
 
 

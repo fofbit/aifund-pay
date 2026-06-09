@@ -17,24 +17,31 @@ logger = logging.getLogger(__name__)
 
 # Default subscription plans (customize in your app)
 DEFAULT_PLANS = {
+    "starter_monthly": {
+        "id": "starter_monthly",
+        "name": "Starter Monthly",
+        "price_usd": 1.00,
+        "interval": "monthly",
+        "interval_days": 30,
+    },
     "basic_monthly": {
         "id": "basic_monthly",
         "name": "Basic Monthly",
-        "price_usd": 9.99,
+        "price_usd": 4.99,
         "interval": "monthly",
         "interval_days": 30,
     },
     "pro_monthly": {
         "id": "pro_monthly",
         "name": "Pro Monthly",
-        "price_usd": 29.99,
+        "price_usd": 9.99,
         "interval": "monthly",
         "interval_days": 30,
     },
     "basic_yearly": {
         "id": "basic_yearly",
         "name": "Basic Yearly",
-        "price_usd": 99.99,
+        "price_usd": 39.99,
         "interval": "yearly",
         "interval_days": 365,
     },

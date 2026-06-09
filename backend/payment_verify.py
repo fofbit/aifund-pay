@@ -139,7 +139,7 @@ def create_payment_router(
         """Check blockchain APIs for USDT transfer."""
         if chain == "trc20":
             return await _check_trc20(from_address, min_amount)
-        elif chain in ("erc20", "bsc", "arb"):
+        elif chain in ("erc20", "bsc", "arb", "polygon", "base"):
             return await _check_evm(chain, from_address, min_amount)
         return None
 
@@ -161,7 +161,13 @@ def create_payment_router(
         return None
 
     async def _check_evm(chain: str, from_address: str, min_amount: float) -> Optional[Dict]:
-        api_urls = {"erc20": "https://api.etherscan.io/api", "bsc": "https://api.bscscan.com/api", "arb": "https://api.arbiscan.io/api"}
+        api_urls = {
+            "erc20": "https://api.etherscan.io/api",
+            "bsc": "https://api.bscscan.com/api",
+            "arb": "https://api.arbiscan.io/api",
+            "polygon": "https://api.polygonscan.com/api",
+            "base": "https://api.basescan.org/api",
+        }
         if chain not in api_urls:
             return None
         try:

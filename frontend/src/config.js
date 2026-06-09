@@ -87,6 +87,7 @@ const config = {
     erc20: { name: 'Ethereum (ERC20)', icon: '🔷', fee: 'High gas', speed: '~15s' },
     bsc:   { name: 'BNB Chain (BEP20)', icon: '🟡', fee: 'Very low', speed: '~3s' },
     arb:   { name: 'Arbitrum', icon: '🔵', fee: 'Low', speed: '~2s' },
+    polygon: { name: 'Polygon', icon: '🟪', fee: 'Very low', speed: '~2s' },
     base:  { name: 'Base', icon: '🅱️', fee: 'Very low', speed: '~2s' },
     sol:   { name: 'Solana', icon: '🟣', fee: 'Minimal', speed: '~0.4s' },
     bitcoin: { name: 'Bitcoin', icon: '🟠', fee: 'Variable', speed: '~10min' },
