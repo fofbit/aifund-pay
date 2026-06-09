@@ -1,6 +1,6 @@
 {
   "name": "@aifund/pay",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Accept crypto payments in 3 minutes. Zero dependencies. Wallet connect + USDT on-chain verification.",
   "main": "frontend/src/hooks/useWalletConnect.js",
   "keywords": [

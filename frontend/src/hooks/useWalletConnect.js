@@ -1,14 +1,16 @@
 /**
- * AiFund Pay — useWalletConnect Hook
- * Zero-dependency crypto wallet connect for React apps.
+ * AiFund Pay — useWalletConnect Hook (v1.3 Multi-Wallet)
+ * Supports EVM + Solana + Bitcoin + Atomicals. Zero dependencies.
  * https://aifund.com/pay
  */
 import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import config from '../config';
+import { detectWallets, connectWallet, detectChainFromAddress, WALLET_PROVIDERS } from '../adapters/multiWallet';
 
-const STORAGE_KEY_WALLET = config.storageKeys.wallet;
-const STORAGE_KEY_DEMO = config.storageKeys.demoMode;
+const SK_WALLET = config.storageKeys.wallet;
+const SK_DEMO = config.storageKeys.demoMode;
+const SK_CHAIN = 'afp_chain_type';
 
 export function useWalletConnect(options = {}) {
   const backendUrl = options.backendUrl || config.backendUrl;
@@ -20,27 +22,27 @@ export function useWalletConnect(options = {}) {
   const [loading, setLoading] = useState(false);
   const [isDemoMode, setIsDemoMode] = useState(false);
   const [error, setError] = useState(null);
+  const [walletType, setWalletType] = useState(null); // evm, solana, bitcoin, atomicals
 
-  // Chain type detection
-  const chainType = address?.startsWith('0x') ? 'evm'
-    : address?.startsWith('T') ? 'tron'
-    : address === config.demo.walletAddress ? 'demo'
-    : 'solana';
+  // Detected wallets in browser
+  const availableWallets = typeof window !== 'undefined' ? detectWallets() : [];
 
-  const chainLabel = { evm: 'EVM (Ethereum/BSC/ARB)', tron: 'Tron', solana: 'Solana', demo: 'Demo' }[chainType];
-  const chainIcon = { evm: '🔷', tron: '🔴', solana: '🟣', demo: '🎮' }[chainType];
+  // Chain info
+  const chainType = walletType || detectChainFromAddress(address) || (isDemoMode ? 'demo' : 'unknown');
+  const chainInfo = WALLET_PROVIDERS[chainType] || {};
+  const chainLabel = chainInfo.label || (isDemoMode ? 'Demo Mode' : chainType);
+  const chainIcon = chainInfo.icon || (isDemoMode ? '🎮' : '❓');
 
-  // Format address for display: 0x71376f...d523
   const displayAddress = address
     ? isDemoMode ? 'Demo Account' : `${address.substring(0, 6)}...${address.substring(address.length - 4)}`
     : '';
 
-  // ===== Connect to backend =====
-  const connectToBackend = useCallback(async (walletAddress, walletType = 'metamask') => {
+  // Connect to backend
+  const connectToBackend = useCallback(async (walletAddress, wType = 'metamask') => {
     try {
       const response = await axios.post(`${api}/wallet/connect`, {
         wallet_address: walletAddress,
-        wallet_type: walletType,
+        wallet_type: wType,
       });
       setAddress(walletAddress);
       setUserData(response.data);
@@ -48,46 +50,53 @@ export function useWalletConnect(options = {}) {
       setError(null);
       return response.data;
     } catch (err) {
-      console.error('Backend connect error:', err);
       setError('Failed to connect to server');
-      localStorage.removeItem(STORAGE_KEY_WALLET);
+      localStorage.removeItem(SK_WALLET);
       return null;
     }
   }, [api]);
 
-  // ===== Auto-reconnect on mount =====
+  // Auto-reconnect
   useEffect(() => {
-    const savedWallet = localStorage.getItem(STORAGE_KEY_WALLET);
-    const savedDemo = localStorage.getItem(STORAGE_KEY_DEMO);
+    const savedWallet = localStorage.getItem(SK_WALLET);
+    const savedDemo = localStorage.getItem(SK_DEMO);
+    const savedChain = localStorage.getItem(SK_CHAIN);
 
     if (savedDemo === 'true') {
       enterDemo();
     } else if (savedWallet) {
-      connectToBackend(savedWallet);
+      if (savedChain) setWalletType(savedChain);
+      connectToBackend(savedWallet, savedChain || 'metamask');
     }
   }, [connectToBackend]);
 
-  // ===== Connect wallet (MetaMask/EVM) =====
-  const connect = useCallback(async () => {
+  // Connect wallet (auto-detect or specify type)
+  const connect = useCallback(async (type) => {
     setLoading(true);
     setError(null);
-    try {
-      if (typeof window.ethereum === 'undefined') {
+
+    // If type not specified, try to auto-detect
+    if (!type) {
+      const detected = detectWallets();
+      if (detected.length === 0) {
         setError('no_wallet');
+        setLoading(false);
         return { success: false, reason: 'no_wallet' };
       }
+      type = detected[0].type; // Use first detected
+    }
 
-      const accounts = await window.ethereum.request({
-        method: 'eth_requestAccounts',
-      });
-      const walletAddress = accounts[0];
-      const data = await connectToBackend(walletAddress);
+    try {
+      const result = await connectWallet(type);
+      const data = await connectToBackend(result.address, result.provider);
 
       if (data) {
+        setWalletType(type);
         setIsDemoMode(false);
-        localStorage.setItem(STORAGE_KEY_WALLET, walletAddress);
-        localStorage.removeItem(STORAGE_KEY_DEMO);
-        return { success: true, address: walletAddress, data };
+        localStorage.setItem(SK_WALLET, result.address);
+        localStorage.setItem(SK_CHAIN, type);
+        localStorage.removeItem(SK_DEMO);
+        return { success: true, address: result.address, chain: type, data };
       }
       return { success: false, reason: 'backend_error' };
     } catch (err) {
@@ -102,18 +111,24 @@ export function useWalletConnect(options = {}) {
     }
   }, [connectToBackend]);
 
-  // ===== Disconnect =====
+  // Disconnect
   const disconnect = useCallback(() => {
+    // Try to disconnect Solana provider
+    if (walletType === 'solana' && WALLET_PROVIDERS.solana.disconnect) {
+      WALLET_PROVIDERS.solana.disconnect().catch(() => {});
+    }
     setConnected(false);
     setAddress(null);
     setUserData(null);
     setIsDemoMode(false);
+    setWalletType(null);
     setError(null);
-    localStorage.removeItem(STORAGE_KEY_WALLET);
-    localStorage.removeItem(STORAGE_KEY_DEMO);
-  }, []);
+    localStorage.removeItem(SK_WALLET);
+    localStorage.removeItem(SK_DEMO);
+    localStorage.removeItem(SK_CHAIN);
+  }, [walletType]);
 
-  // ===== Demo mode =====
+  // Demo mode
   const enterDemo = useCallback(async () => {
     if (!config.demo.enabled) return { success: false, reason: 'demo_disabled' };
     setLoading(true);
@@ -122,7 +137,8 @@ export function useWalletConnect(options = {}) {
       const data = await connectToBackend(config.demo.walletAddress, 'demo');
       if (data) {
         setIsDemoMode(true);
-        localStorage.setItem(STORAGE_KEY_DEMO, 'true');
+        setWalletType(null);
+        localStorage.setItem(SK_DEMO, 'true');
         return { success: true, data };
       }
       return { success: false, reason: 'backend_error' };
@@ -134,33 +150,16 @@ export function useWalletConnect(options = {}) {
     }
   }, [connectToBackend]);
 
-  // ===== Refresh user data =====
+  // Refresh
   const refresh = useCallback(async () => {
-    if (address) {
-      await connectToBackend(address, isDemoMode ? 'demo' : 'metamask');
-    }
-  }, [address, isDemoMode, connectToBackend]);
+    if (address) await connectToBackend(address, walletType || 'metamask');
+  }, [address, walletType, connectToBackend]);
 
   return {
-    // State
-    connected,
-    address,
-    userData,
-    loading,
-    isDemoMode,
-    error,
-
-    // Derived
-    chainType,
-    chainLabel,
-    chainIcon,
-    displayAddress,
-    hasWalletExtension: typeof window !== 'undefined' && typeof window.ethereum !== 'undefined',
-
-    // Actions
-    connect,
-    disconnect,
-    enterDemo,
-    refresh,
+    connected, address, userData, loading, isDemoMode, error,
+    walletType, chainType, chainLabel, chainIcon, displayAddress,
+    availableWallets,
+    hasWalletExtension: availableWallets.length > 0,
+    connect, disconnect, enterDemo, refresh,
   };
 }
