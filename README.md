@@ -63,16 +63,16 @@ The crypto wallet ecosystem has powerful tools — but they're built for **dApp 
 
 ```bash
 # Copy into your project
-cp -r frontend/src/ your-app/src/aifund-pay/
+cp -r frontend/src/ your-app/src/aifundpay/
 
 # Only dependency
 npm install axios
 ```
 
 ```jsx
-import { useWalletConnect } from './aifund-pay/hooks/useWalletConnect';
-import { WalletButton } from './aifund-pay/components/WalletButton';
-import { PaymentFlow } from './aifund-pay/components/PaymentFlow';
+import { useWalletConnect } from './aifundpay/hooks/useWalletConnect';
+import { WalletButton } from './aifundpay/components/WalletButton';
+import { PaymentFlow } from './aifundpay/components/PaymentFlow';
 
 function App() {
   const wallet = useWalletConnect();
@@ -154,7 +154,7 @@ export default {
 ## File Structure
 
 ```
-aifund-pay/
+aifundpay/
 ├── frontend/src/
 │   ├── hooks/
 │   │   └── useWalletConnect.js    # Core wallet hook
