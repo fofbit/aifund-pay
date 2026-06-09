@@ -1,0 +1,25 @@
+{
+  "name": "@aifund/pay",
+  "version": "1.0.0",
+  "description": "Accept crypto payments in 3 minutes. Zero dependencies. Wallet connect + USDT on-chain verification.",
+  "main": "frontend/src/hooks/useWalletConnect.js",
+  "keywords": [
+    "crypto", "payment", "wallet", "connect", "usdt", "metamask",
+    "web3", "zero-dependency", "trc20", "erc20", "bsc", "solana",
+    "qr-code", "on-chain-verification", "aifund"
+  ],
+  "author": "AiFund.com <pay@aifund.com>",
+  "license": "MIT",
+  "homepage": "https://aifund.com/pay",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AiFund/pay"
+  },
+  "bugs": {
+    "url": "https://github.com/AiFund/pay/issues"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "axios": ">=0.21.0"
+  }
+}
