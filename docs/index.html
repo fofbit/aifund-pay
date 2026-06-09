@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AiFund Pay — Accept Crypto Payments in 3 Minutes</title>
+  <meta name="description" content="Zero-dependency crypto wallet connect + USDT payment verification. No RainbowKit. No Web3Modal. Just window.ethereum + your backend.">
+  <meta property="og:title" content="AiFund Pay — Accept Crypto Payments in 3 Minutes">
+  <meta property="og:description" content="Zero-dependency wallet connect + USDT on-chain verification for any website.">
+  <meta property="og:url" content="https://pay.aifund.com">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0F172A; color: #fff; }
+    a { color: #A78BFA; text-decoration: none; } a:hover { color: #C4B5FD; }
+    .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+    
+    /* Hero */
+    .hero { padding: 80px 0 60px; text-align: center; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: -200px; left: -200px; width: 600px; height: 600px; background: radial-gradient(circle, rgba(124,58,237,0.15), transparent 70%); }
+    .hero::after { content: ''; position: absolute; bottom: -200px; right: -200px; width: 600px; height: 600px; background: radial-gradient(circle, rgba(236,72,153,0.1), transparent 70%); }
+    .hero-content { position: relative; z-index: 1; }
+    .badge { display: inline-block; padding: 6px 16px; background: rgba(124,58,237,0.2); border: 1px solid rgba(124,58,237,0.3); border-radius: 24px; font-size: 13px; color: #A78BFA; margin-bottom: 24px; }
+    h1 { font-size: clamp(32px, 5vw, 56px); font-weight: 800; line-height: 1.1; margin-bottom: 16px; }
+    h1 span { background: linear-gradient(to right, #7C3AED, #EC4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .subtitle { font-size: clamp(16px, 2.5vw, 20px); color: #9CA3AF; max-width: 600px; margin: 0 auto 32px; line-height: 1.5; }
+    .cta-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 16px; }
+    .btn { padding: 14px 32px; border-radius: 12px; font-size: 16px; font-weight: 700; border: none; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+    .btn-primary { background: linear-gradient(to right, #7C3AED, #EC4899); color: #fff; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,58,237,0.4); }
+    .btn-secondary { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+    .btn-secondary:hover { background: rgba(255,255,255,0.15); }
+    .hero-note { color: #6B7280; font-size: 13px; }
+
+    /* Code block */
+    .code-block { background: #1E293B; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 24px; text-align: left; margin: 40px auto; max-width: 640px; overflow-x: auto; }
+    .code-block pre { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 13px; line-height: 1.6; color: #E2E8F0; }
+    .code-comment { color: #6B7280; } .code-keyword { color: #C084FC; } .code-string { color: #34D399; } .code-fn { color: #60A5FA; }
+
+    /* Comparison table */
+    .compare { padding: 60px 0; }
+    .compare h2 { text-align: center; font-size: 28px; margin-bottom: 8px; }
+    .compare-sub { text-align: center; color: #9CA3AF; margin-bottom: 32px; font-size: 15px; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th { background: #7C3AED; color: #fff; padding: 12px 16px; text-align: left; }
+    th:first-child { border-radius: 8px 0 0 0; } th:last-child { border-radius: 0 8px 0 0; }
+    td { padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+    .check { color: #34D399; font-weight: 700; } .cross { color: #6B7280; }
+
+    /* Features */
+    .features { padding: 60px 0; }
+    .features h2 { text-align: center; font-size: 28px; margin-bottom: 40px; }
+    .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .feature-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 24px; transition: all 0.2s; }
+    .feature-card:hover { border-color: rgba(124,58,237,0.5); transform: translateY(-2px); }
+    .feature-icon { font-size: 32px; margin-bottom: 12px; }
+    .feature-card h3 { font-size: 18px; margin-bottom: 8px; }
+    .feature-card p { color: #9CA3AF; font-size: 14px; line-height: 1.5; }
+
+    /* Roadmap */
+    .roadmap { padding: 60px 0; }
+    .roadmap h2 { text-align: center; font-size: 28px; margin-bottom: 32px; }
+    .roadmap-item { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 20px; padding: 16px; background: rgba(255,255,255,0.03); border-radius: 12px; border-left: 3px solid #7C3AED; }
+    .roadmap-item.done { border-left-color: #34D399; }
+    .roadmap-item.current { border-left-color: #EAB308; background: rgba(234,179,8,0.05); }
+    .roadmap-version { font-weight: 800; font-size: 16px; min-width: 48px; }
+    .roadmap-status { font-size: 11px; padding: 2px 8px; border-radius: 12px; font-weight: 600; }
+    .status-done { background: rgba(52,211,153,0.2); color: #34D399; }
+    .status-next { background: rgba(234,179,8,0.2); color: #EAB308; }
+    .status-planned { background: rgba(124,58,237,0.2); color: #A78BFA; }
+
+    /* Quote */
+    .quote { padding: 60px 0; text-align: center; }
+    .quote blockquote { font-size: clamp(18px, 3vw, 24px); font-style: italic; color: #C4B5FD; max-width: 700px; margin: 0 auto 16px; line-height: 1.5; }
+    .quote cite { color: #6B7280; font-size: 14px; }
+
+    /* Footer */
+    footer { padding: 40px 0; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; }
+    footer p { color: #6B7280; font-size: 13px; margin-bottom: 8px; }
+    .footer-links { display: flex; gap: 24px; justify-content: center; margin-top: 16px; }
+    .footer-links a { color: #9CA3AF; font-size: 13px; }
+
+    @media (max-width: 640px) {
+      .hero { padding: 48px 0 40px; }
+      .cta-group { flex-direction: column; align-items: center; }
+      .btn { width: 100%; justify-content: center; }
+      .feature-grid { grid-template-columns: 1fr; }
+      table { font-size: 12px; } th, td { padding: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container hero-content">
+      <div class="badge">Open Source · MIT License · v1.1</div>
+      <h1>Accept crypto payments<br><span>in 3 minutes.</span></h1>
+      <p class="subtitle">
+        Zero dependencies. No RainbowKit. No Web3Modal. No wagmi.<br>
+        Just <code>window.ethereum</code> + your backend.
+      </p>
+      <div class="cta-group">
+        <a href="https://github.com/fofbit/aifund-pay" class="btn btn-primary">⭐ View on GitHub</a>
+        <a href="https://github.com/fofbit/aifund-pay/tree/main/docs/API.md" class="btn btn-secondary">📄 Documentation</a>
+      </div>
+      <p class="hero-note">Built by the team behind <a href="https://aifund.com">AiFund.com</a></p>
+    </div>
+  </section>
+
+  <!-- Code Example -->
+  <section class="container">
+    <div class="code-block">
+<pre><span class="code-comment">// That's it. Seriously.</span>
+<span class="code-keyword">import</span> { <span class="code-fn">useWalletConnect</span> } <span class="code-keyword">from</span> <span class="code-string">'./hooks/useWalletConnect'</span>;
+<span class="code-keyword">import</span> { <span class="code-fn">WalletButton</span> } <span class="code-keyword">from</span> <span class="code-string">'./components/WalletButton'</span>;
+<span class="code-keyword">import</span> { <span class="code-fn">PaymentFlow</span> } <span class="code-keyword">from</span> <span class="code-string">'./components/PaymentFlow'</span>;
+
+<span class="code-keyword">function</span> <span class="code-fn">App</span>() {
+  <span class="code-keyword">const</span> wallet = <span class="code-fn">useWalletConnect</span>();
+  <span class="code-keyword">return</span> (
+    &lt;div&gt;
+      &lt;<span class="code-fn">WalletButton</span> wallet={wallet} /&gt;
+      {wallet.connected &amp;&amp; (
+        &lt;<span class="code-fn">PaymentFlow</span> walletAddress={wallet.address} amount={<span class="code-string">9.99</span>} /&gt;
+      )}
+    &lt;/div&gt;
+  );
+}</pre>
+    </div>
+  </section>
+
+  <!-- Comparison -->
+  <section class="compare">
+    <div class="container">
+      <h2>Why AiFund Pay?</h2>
+      <p class="compare-sub">They build the connection. We build the transaction.</p>
+      <table>
+        <tr><th></th><th>AiFund Pay</th><th>Reown AppKit</th><th>RainbowKit</th></tr>
+        <tr><td>npm dependencies</td><td class="check">0 (only axios)</td><td class="cross">30+ packages</td><td class="cross">15+ packages</td></tr>
+        <tr><td>Bundle size</td><td class="check">~5KB</td><td class="cross">200-500KB</td><td class="cross">~150KB</td></tr>
+        <tr><td>Registration required</td><td class="check">No</td><td class="cross">Yes (projectId)</td><td class="cross">Yes (projectId)</td></tr>
+        <tr><td>USDT payment verification</td><td class="check">Built-in (5 chains)</td><td class="cross">—</td><td class="cross">—</td></tr>
+        <tr><td>QR code for payment</td><td class="check">Built-in</td><td class="cross">—</td><td class="cross">—</td></tr>
+        <tr><td>On-chain auto-verify</td><td class="check">Polling every 10s</td><td class="cross">—</td><td class="cross">—</td></tr>
+        <tr><td>Gas fee tolerance</td><td class="check">90% built-in</td><td class="cross">—</td><td class="cross">—</td></tr>
+        <tr><td>No-wallet guide</td><td class="check">6 wallets + Chrome</td><td class="cross">—</td><td class="cross">—</td></tr>
+        <tr><td>Theme / custom colors</td><td class="check">config.js theme</td><td>Yes</td><td>Yes</td></tr>
+        <tr><td>Setup time</td><td class="check">3 minutes</td><td class="cross">30+ min</td><td class="cross">20+ min</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- Quote -->
+  <section class="quote">
+    <div class="container">
+      <blockquote>"Every other wallet library stops at 'connected.'<br>AiFund Pay goes all the way to 'paid.'"</blockquote>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features">
+    <div class="container">
+      <h2>Everything you need</h2>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🔌</div>
+          <h3>Wallet Connect</h3>
+          <p>MetaMask, OKX, Trust, Coinbase, Unisat + more. Auto-reconnect, chain detection, account menu.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💰</div>
+          <h3>Payment Verification</h3>
+          <p>5 chains (TRC20, ERC20, BSC, ARB, SOL). QR code, auto-verify polling, TX hash fallback.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🎨</div>
+          <h3>Themeable</h3>
+          <p>Change all colors in config.js. Primary, secondary, background, borders, radius — one file.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📱</div>
+          <h3>Wallet Guide</h3>
+          <p>Users without wallets get a beautiful installation guide with Chrome extension store links.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🎮</div>
+          <h3>Demo Mode</h3>
+          <p>Full experience without any wallet. Let users try before they install.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⛽</div>
+          <h3>Gas Smart</h3>
+          <p>90% tolerance for gas fee deductions. Warns users about gas. Recommends cheapest chain.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Roadmap -->
+  <section class="roadmap">
+    <div class="container">
+      <h2>Roadmap</h2>
+      <div class="roadmap-item done">
+        <div><span class="roadmap-version">v1.0</span></div>
+        <div><strong>Core Release</strong> — Wallet connect + USDT payment verification <span class="roadmap-status status-done">Released</span></div>
+      </div>
+      <div class="roadmap-item done">
+        <div><span class="roadmap-version">v1.1</span></div>
+        <div><strong>Theme System</strong> — Customizable colors via config.js <span class="roadmap-status status-done">Released</span></div>
+      </div>
+      <div class="roadmap-item current">
+        <div><span class="roadmap-version">v1.2</span></div>
+        <div><strong>SIWE Verification</strong> — x401-level signature authentication <span class="roadmap-status status-next">Next</span></div>
+      </div>
+      <div class="roadmap-item">
+        <div><span class="roadmap-version">v1.3</span></div>
+        <div><strong>Multi-Wallet</strong> — Native Solana + Bitcoin wallet adapters <span class="roadmap-status status-planned">Planned</span></div>
+      </div>
+      <div class="roadmap-item">
+        <div><span class="roadmap-version">v1.4</span></div>
+        <div><strong>x402 Micropayments</strong> — HTTP 402 protocol for API billing <span class="roadmap-status status-planned">Planned</span></div>
+      </div>
+      <div class="roadmap-item">
+        <div><span class="roadmap-version">v2.0</span></div>
+        <div><strong>Multi-Token</strong> — Accept USDC, ETH, BTC, SOL natively <span class="roadmap-status status-planned">Planned</span></div>
+      </div>
+      <div class="roadmap-item">
+        <div><span class="roadmap-version">v3.0</span></div>
+        <div><strong>AI Agent Payments</strong> — Autonomous payment standard for AI agents <span class="roadmap-status status-planned">Planned</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p><strong>AiFund Pay</strong> — Accept crypto payments in 3 minutes.</p>
+      <p>MIT License · Open Source · Built by <a href="https://aifund.com">AiFund.com</a></p>
+      <div class="footer-links">
+        <a href="https://github.com/fofbit/aifund-pay">GitHub</a>
+        <a href="https://github.com/fofbit/aifund-pay/tree/main/docs/API.md">Docs</a>
+        <a href="https://aifund.com">AiFund.com</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
