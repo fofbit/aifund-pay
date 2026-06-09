@@ -192,8 +192,8 @@ aifund-pay/
 | v1.1 | Theme system (customizable colors) | ✅ Released |
 | v1.2 | SIWE signature verification (x401 security) | ✅ Released |
 | v1.3 | Multi-wallet: EVM + Solana + Bitcoin + Atomicals | ✅ Released |
-| v1.4 | x402 HTTP micropayment protocol | Next |
-| v2.0 | Multi-token payment (USDC, ETH, BTC, SOL) | Planned |
+| v1.4 | x402 HTTP micropayment protocol | ✅ Released |
+| v2.0 | Multi-token payment (USDC, ETH, BTC, SOL) | Next |
 | v2.1 | Subscription payments (recurring billing) | Planned |
 | v3.0 | AI Agent autonomous payment standard | Planned |
 
